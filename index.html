@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Open³ — The Triple-Open Certification</title>
+<meta name="description" content="Open³ is a public, auditable standard certifying that a project, product, or organization is open across three axes: source, data, and participation." />
+<meta name="color-scheme" content="light dark" />
+<style>
+  /* Open³ — single-file specification page. No build, no dependencies.
+     System fonts only; system light/dark; one column; deliberately plain. */
+  :root {
+    --bg: #ffffff;
+    --panel: #f6f7f7;
+    --ink: #16191c;
+    --muted: #5b6168;
+    --faint: #888d93;
+    --line: #e3e5e7;
+    --line-strong: #cfd2d5;
+    --accent: #0f6e63;          /* a sober certification teal */
+    --accent-ink: #0b5048;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1113;
+      --panel: #15191c;
+      --ink: #e7eaec;
+      --muted: #9aa1a8;
+      --faint: #6f767d;
+      --line: #23282c;
+      --line-strong: #313840;
+      --accent: #3fb9aa;
+      --accent-ink: #6fd4c7;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    font-feature-settings: "kern" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  /* --- masthead --- */
+  header { border-bottom: 1px solid var(--line); }
+  .masthead { padding: 56px 0 40px; }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+  h1 {
+    font-size: clamp(28px, 6vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 14px 0 0;
+    font-weight: 600;
+  }
+  .lede { color: var(--muted); margin: 16px 0 0; max-width: 58ch; }
+  .docmeta {
+    margin-top: 28px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+  }
+  .docmeta b { color: var(--muted); font-weight: 500; }
+
+  /* --- sections --- */
+  main { padding: 8px 0 24px; }
+  section { padding: 40px 0; border-bottom: 1px solid var(--line); }
+  .secnum {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    color: var(--accent-ink);
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 8px 0 14px;
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 26px 0 8px;
+  }
+  p { margin: 12px 0; }
+  p, li { color: var(--ink); }
+  .muted { color: var(--muted); }
+
+  /* --- axes overview --- */
+  .axes { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 8px; }
+  @media (min-width: 620px) { .axes { grid-template-columns: repeat(3, 1fr); } }
+  .axis { background: var(--bg); padding: 18px 18px 20px; }
+  .axis .tag { font-family: var(--mono); font-size: 12px; color: var(--accent-ink); letter-spacing: 0.08em; }
+  .axis h3 { margin: 6px 0 6px; }
+  .axis p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  /* --- criteria tables --- */
+  .crit { width: 100%; border-collapse: collapse; margin: 6px 0 4px; font-size: 14.5px; }
+  .crit th, .crit td { text-align: left; vertical-align: top; padding: 11px 12px; border-bottom: 1px solid var(--line); }
+  .crit th { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); font-weight: 500; }
+  .crit td.code { font-family: var(--mono); color: var(--accent-ink); white-space: nowrap; width: 1%; }
+  .crit tr:last-child td { border-bottom: none; }
+
+  /* --- scoring / levels --- */
+  table.grid { width: 100%; border-collapse: collapse; font-size: 14.5px; margin-top: 6px; }
+  table.grid th, table.grid td { padding: 11px 12px; border: 1px solid var(--line); text-align: left; }
+  table.grid th { background: var(--panel); font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
+  table.grid td.lvl { font-family: var(--mono); color: var(--accent-ink); white-space: nowrap; }
+
+  ol.steps { margin: 10px 0; padding-left: 0; list-style: none; counter-reset: step; }
+  ol.steps li { position: relative; padding: 8px 0 8px 40px; border-bottom: 1px solid var(--line); }
+  ol.steps li:last-child { border-bottom: none; }
+  ol.steps li::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: 0; top: 8px;
+    font-family: var(--mono); font-size: 12px;
+    width: 24px; height: 24px; line-height: 24px; text-align: center;
+    border: 1px solid var(--line-strong); border-radius: 50%; color: var(--muted);
+  }
+
+  code { font-family: var(--mono); font-size: 0.92em; background: var(--panel); padding: 1px 5px; border-radius: 3px; }
+  a { color: var(--accent-ink); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+  a:hover { border-bottom-color: var(--accent); }
+
+  /* --- the mark --- */
+  .mark-row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 8px; }
+  .badge {
+    width: 104px; height: 104px; flex: none;
+    border: 1.5px solid var(--line-strong); border-radius: 10px;
+    display: grid; place-content: center; text-align: center; gap: 2px;
+    background: var(--panel);
+  }
+  .badge .b1 { font-family: var(--mono); font-size: 26px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+  .badge .b2 { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; color: var(--accent-ink); text-transform: uppercase; }
+
+  /* --- footer --- */
+  footer { padding: 36px 0 64px; color: var(--faint); }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 12px; }
+  .status { color: var(--accent-ink); }
+
+  .note { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap masthead">
+    <div class="wordmark">Open³ · Triple-Open Certification</div>
+    <h1>A public standard for open systems.</h1>
+    <p class="lede">
+      Open³ certifies that a project, product, or organization is open across three
+      independent axes — <b>source</b>, <b>data</b>, and <b>participation</b> — against a
+      fixed, auditable rubric. Every claim is backed by public evidence. Anyone can verify it.
+    </p>
+    <div class="docmeta">
+      <span><b>Status:</b> Working Draft</span>
+      <span><b>Version:</b> 0.1</span>
+      <span><b>Updated:</b> 2026-06-19</span>
+      <span><b>Maintainer:</b> Into The Blue</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="scope">
+    <div class="secnum">§1 · Scope</div>
+    <h2>What this document is</h2>
+    <p>
+      This specification defines the criteria, scoring, and levels for the Open³ mark.
+      It is a measurement, not a manifesto: a project is evaluated against the
+      twelve criteria in §3, scored per §4, and assigned a level per §5. Certification
+      is self-assessed, evidenced in public, and open to challenge.
+    </p>
+    <p class="muted">
+      Open³ makes no claim about a project's quality, usefulness, or ethics beyond openness.
+      A project may be fully open and otherwise unremarkable; the mark says only what it says.
+    </p>
+  </section>
+
+  <section id="axes">
+    <div class="secnum">§2 · Principles</div>
+    <h2>Three axes of openness</h2>
+    <p class="muted">The axes are independent. A project earns a score on each; none substitutes for another.</p>
+    <div class="axes">
+      <div class="axis">
+        <div class="tag">OS</div>
+        <h3>Open Source</h3>
+        <p>The means of building the thing are public and reusable under a recognized license.</p>
+      </div>
+      <div class="axis">
+        <div class="tag">OD</div>
+        <h3>Open Data</h3>
+        <p>The data needed to reproduce or audit the results is published, documented, and licensed.</p>
+      </div>
+      <div class="axis">
+        <div class="tag">OP</div>
+        <h3>Open Participation</h3>
+        <p>Affected people can see decisions, contribute to them, and hold the project to account.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="criteria">
+    <div class="secnum">§3 · Criteria</div>
+    <h2>The twelve criteria</h2>
+    <p class="muted">Four criteria per axis. Each is scored independently in §4.</p>
+
+    <h3>3.1 · Open Source</h3>
+    <table class="crit">
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="code">OS-1</td><td>All source required to build and run the system is published under an OSI-approved license.</td></tr>
+        <tr><td class="code">OS-2</td><td>Builds are reproducible from public sources with documented, public tooling.</td></tr>
+        <tr><td class="code">OS-3</td><td>External contributions are accepted through a documented, public process.</td></tr>
+        <tr><td class="code">OS-4</td><td>Third-party dependencies are themselves open, or their substitution is documented.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>3.2 · Open Data</h3>
+    <table class="crit">
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="code">OD-1</td><td>Data necessary to reproduce published results is released under an open data license.</td></tr>
+        <tr><td class="code">OD-2</td><td>Data is machine-readable and accompanied by a documented schema.</td></tr>
+        <tr><td class="code">OD-3</td><td>Provenance, collection method, and known limitations are disclosed.</td></tr>
+        <tr><td class="code">OD-4</td><td>Personal or sensitive data is governed by a published handling policy.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>3.3 · Open Participation</h3>
+    <table class="crit">
+      <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="code">OP-1</td><td>Decisions affecting stakeholders follow a public, documented process.</td></tr>
+        <tr><td class="code">OP-2</td><td>Affected parties can submit input and receive an on-the-record response.</td></tr>
+        <tr><td class="code">OP-3</td><td>Governance, funding sources, and conflicts of interest are disclosed.</td></tr>
+        <tr><td class="code">OP-4</td><td>Key outputs carry a plain-language summary accessible to non-experts.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="scoring">
+    <div class="secnum">§4 · Scoring</div>
+    <h2>How criteria are scored</h2>
+    <p>Each criterion is scored on a three-point scale, then summed per axis (max 4) and overall (max 12).</p>
+    <table class="grid">
+      <thead><tr><th>Score</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="lvl">0.0</td><td>Not met, or no public evidence.</td></tr>
+        <tr><td class="lvl">0.5</td><td>Partially met; evidence exists but is incomplete or undocumented.</td></tr>
+        <tr><td class="lvl">1.0</td><td>Fully met, with public, verifiable evidence.</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">All evidence is referenced from a public <i>evidence ledger</i> (§6). A criterion with no linked evidence scores 0.0 by definition.</p>
+  </section>
+
+  <section id="levels">
+    <div class="secnum">§5 · Levels</div>
+    <h2>Certification levels</h2>
+    <table class="grid">
+      <thead><tr><th>Level</th><th>Threshold</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td class="lvl">— None</td><td>Any axis &lt; 2.0</td><td>Does not qualify. A single weak axis disqualifies.</td></tr>
+        <tr><td class="lvl">Open³ Certified</td><td>Every axis ≥ 3.0</td><td>Open on all three axes with no serious gap.</td></tr>
+        <tr><td class="lvl">Open³ Exemplary</td><td>Total = 12.0</td><td>Every criterion fully met. The complete bar.</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">Levels are deliberately coarse. The point is the floor on every axis, not a high aggregate that hides one closed dimension.</p>
+  </section>
+
+  <section id="process">
+    <div class="secnum">§6 · Process</div>
+    <h2>From self-assessment to mark</h2>
+    <ol class="steps">
+      <li><b>Self-assess.</b> Score the project against all twelve criteria.</li>
+      <li><b>Publish an evidence ledger.</b> A single public page linking each criterion to its evidence — repositories, datasets, governance records.</li>
+      <li><b>Attest.</b> Submit the ledger and computed scores for listing in the public register.</li>
+      <li><b>Re-attest annually.</b> Certifications lapse after twelve months without renewal.</li>
+      <li><b>Open to challenge.</b> Any party may dispute a score with public counter-evidence; unresolved disputes suspend the mark.</li>
+    </ol>
+    <div class="note">
+      Open³ is self-certifying by design. Trust comes from public evidence and the
+      standing right of challenge — not from a gatekeeper. Independent reviewers may
+      attest to a ledger, but no review is required to compute a score.
+    </div>
+  </section>
+
+  <section id="mark">
+    <div class="secnum">§7 · The Mark</div>
+    <h2>Using the mark</h2>
+    <div class="mark-row">
+      <div class="badge">
+        <div class="b1">O³</div>
+        <div class="b2">Certified</div>
+      </div>
+      <p class="muted" style="margin:0;max-width:42ch;">
+        Display the mark only at the level earned, alongside a link to your evidence ledger and
+        per-axis scores, e.g. <code>OS 4 · OD 3 · OP 3</code>. The mark without a linked ledger is void.
+      </p>
+    </div>
+  </section>
+
+  <section id="status">
+    <div class="secnum">§8 · Status</div>
+    <h2>This is a working draft</h2>
+    <p class="muted">
+      Version 0.1 is published for comment. Criteria, scoring, and thresholds may change before 1.0.
+      Nothing here constitutes a binding certification scheme yet. A formal register, an evidence-ledger
+      template, and a reference scoring worksheet are forthcoming.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span class="status">● Working Draft 0.1</span>
+    <span>opencubed.org · 2026-06-19</span>
+  </div>
+</footer>
+
+</body>
+</html>
