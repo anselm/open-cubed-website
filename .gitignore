@@ -1,5 +1,1 @@
 .DS_Store
-
-# Legacy exe.dev VM deploy — Open³ now hosts on GitHub Pages. Kept locally only.
-Caddyfile
-deploy.sh
